@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-
 namespace DexproSolutionsGmbh\PhpCommons\OS\Process;
-
 
 use DexproSolutionsGmbh\PhpCommons\OS\OS;
 use Exception;
@@ -60,7 +58,7 @@ class ProcessStarter
      */
     public static function forProgram(string $name): self
     {
-        if (!function_exists('proc_open')) {
+        if (! function_exists('proc_open')) {
             throw new Exception('proc_open does not exist or is disabled');
         }
 
@@ -83,6 +81,7 @@ class ProcessStarter
 
         $other = clone $this;
         $other->workingDirectory = $workingDirectory;
+
         return $other;
     }
 
@@ -95,6 +94,7 @@ class ProcessStarter
     {
         $other = clone $this;
         $other->environment[$name] = $value;
+
         return $other;
     }
 
@@ -104,7 +104,6 @@ class ProcessStarter
      *
      * Notice: If you want to unset the PATH environment variable or want to override it use {@link self::withEnvironmentVariable()}
      *
-     * @param string $value
      * @return \App\V2\Modules\Tools\ProcessStarter
      */
     public function withAdditionalPathVariable(string $value): ProcessStarter
@@ -113,14 +112,15 @@ class ProcessStarter
         $separator = OS::isWindows() ? ';' : ':';
 
         if (isset($other->environment[$this->pathEnvKey])) {
-            $other->environment[$this->pathEnvKey] = $value . $separator . $this->environment[$this->pathEnvKey];
+            $other->environment[$this->pathEnvKey] = $value.$separator.$this->environment[$this->pathEnvKey];
         } else {
             $PATH = getenv($this->pathEnvKey);
-            if (!$PATH) {
+            if (! $PATH) {
                 $PATH = '';
             }
-            $other->environment[$this->pathEnvKey] = $value . $separator . $PATH;
+            $other->environment[$this->pathEnvKey] = $value.$separator.$PATH;
         }
+
         return $other;
     }
 
@@ -140,16 +140,17 @@ class ProcessStarter
 
         // if an executable is specified, validate it
         if ($executable !== null) {
-            if (!file_exists($executable)) {
-                throw new Exception('path "' . $executable . '" does not exist');
+            if (! file_exists($executable)) {
+                throw new Exception('path "'.$executable.'" does not exist');
             }
-            if (!is_executable($executable)) {
-                throw new Exception('file "' . $executable . '" is not executable');
+            if (! is_executable($executable)) {
+                throw new Exception('file "'.$executable.'" is not executable');
             }
         }
 
         $other = clone $this;
         $other->executable = $executable;
+
         return $other;
     }
 
@@ -158,11 +159,11 @@ class ProcessStarter
      *
      * All other arguments are passed to the `run()` method.
      *
-     * @return static
      *
      * @var int|string ...$defaultArgs
      *
-     * @param string $defaultArgs
+     * @param  string  $defaultArgs
+     * @return static
      */
     public function withDefaultArguments(...$defaultArgs): self
     {
@@ -174,6 +175,7 @@ class ProcessStarter
 
         $other = clone $this;
         $other->defaultArgs = $defaultArgs;
+
         return $other;
     }
 
@@ -194,6 +196,7 @@ class ProcessStarter
 
         $other = clone $this;
         $other->combinedOutput = $combinedOutput;
+
         return $other;
     }
 
@@ -212,6 +215,7 @@ class ProcessStarter
 
         $other = clone $this;
         $other->expectedExitCodes = $expectedExitCodes;
+
         return $other;
     }
 
@@ -223,9 +227,10 @@ class ProcessStarter
      *
      * TODO: When it fails, attach the captured output to the exception instead.
      *
-     * @throws Exception
      *
-     * @param int|string $args
+     * @param  int|string  $args
+     *
+     * @throws Exception
      */
     public function run(...$args): Process
     {
@@ -249,18 +254,18 @@ class ProcessStarter
         rewind($process->stdoutStream);
         rewind($process->stderrStream);
 
-        if (!in_array($process->exitCode, $this->expectedExitCodes)) {
+        if (! in_array($process->exitCode, $this->expectedExitCodes)) {
             // Todo: The exception does not really help debugging why a subprocess might have failed. Maybe include the first X stdout/stderr lines in custom exception class?
-            throw new Exception('program "' . $this->name . '" failed with error code ' . $process->exitCode, $process->exitCode);
+            throw new Exception('program "'.$this->name.'" failed with error code '.$process->exitCode, $process->exitCode);
         }
 
         return $process;
     }
 
     /**
-     * @param resource $stdout
-     * @param resource $stderr
-     * @param null|string $workingDirectory
+     * @param  resource  $stdout
+     * @param  resource  $stderr
+     * @param  null|string  $workingDirectory
      */
     private function runImpl(array $argv, $stdout, $stderr, $workingDirectory, ?array $environment): int
     {
@@ -303,6 +308,7 @@ class ProcessStarter
                 throw new InvalidArgumentException('invalid commandline argument type');
             }
         }
+
         return $res;
     }
 
@@ -325,6 +331,7 @@ class ProcessStarter
                 $environment[$key] = $value;
             }
         }
+
         return $environment;
     }
 
@@ -364,13 +371,13 @@ class ProcessStarter
 
         foreach (explode($separator, $path) as $location) {
             foreach ($pathext as $ext) {
-                $fullPath = $location . DIRECTORY_SEPARATOR . $this->name . $ext;
+                $fullPath = $location.DIRECTORY_SEPARATOR.$this->name.$ext;
                 if (file_exists($fullPath)) {
                     return $fullPath;
                 }
             }
         }
 
-        throw new Exception('no executable named "' . $this->name . '" found in PATH');
+        throw new Exception('no executable named "'.$this->name.'" found in PATH');
     }
 }

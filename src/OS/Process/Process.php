@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-
 namespace DexproSolutionsGmbh\PhpCommons\OS\Process;
-
 
 use Generator;
 
@@ -23,8 +21,8 @@ class Process
     public function __construct(string $name)
     {
         $this->name = $name;
-        $this->stdoutStream = fopen('php://temp','rw+');
-        $this->stderrStream = fopen('php://temp','rw+');
+        $this->stdoutStream = fopen('php://temp', 'rw+');
+        $this->stderrStream = fopen('php://temp', 'rw+');
     }
 
     public function __destruct()
