@@ -5,10 +5,9 @@ declare(strict_types=1);
 
 namespace DexproSolutionsGmbh\PhpCommons\OS\Process;
 
-use App\V2\Modules\Tools\ProcessStarter;
+use DexproSolutionsGmbh\PhpCommons\OS\OS;
 use Exception;
 use PHPUnit\Framework\TestCase;
-use Squeeze\xTools;
 
 class ProcessStarterTest extends TestCase
 {
@@ -86,7 +85,7 @@ class ProcessStarterTest extends TestCase
         $iterator = $process->iterStdoutLines();
 
         // build excepted result
-        $separator = (xTools::getOperatingSystem() === xTools::OS_WINDOWS) ? ';' : ':';
+        $separator = OS::isWindows() ? ';' : ':';
         $expectedPathVariable = implode($separator, array_reverse($executables)) . $separator . $pathBeforeExecutable;
 
         // assert the PATH environment variable from the child process with the expected PATH environment variable
