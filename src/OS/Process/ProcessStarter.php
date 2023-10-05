@@ -23,7 +23,10 @@ class ProcessStarter
 
     private ?string $workingDirectory = null;
 
-    private $environment = [];
+    /**
+     * @var array<string, string|null>
+     */
+    private array $environment = [];
 
     private ?string $executable = null;
 
@@ -32,6 +35,9 @@ class ProcessStarter
 
     private bool $combinedOutput = false;
 
+    /**
+     * @var int[]
+     */
     private array $expectedExitCodes = [0];
 
     /**
@@ -53,16 +59,14 @@ class ProcessStarter
      * factory method
      *
      * The name is used as default name for the executable.
-     *
-     * @return static
      */
-    public static function forProgram(string $name): self
+    public static function forProgram(string $name): ProcessStarter
     {
         if (! function_exists('proc_open')) {
             throw new Exception('proc_open does not exist or is disabled');
         }
 
-        return new static($name);
+        return new ProcessStarter($name);
     }
 
     /**
@@ -103,8 +107,6 @@ class ProcessStarter
      * e.g. /some/path/to/executable(priority 1)  /some/some/path/to/executable(not considered if same)
      *
      * Notice: If you want to unset the PATH environment variable or want to override it use {@link self::withEnvironmentVariable()}
-     *
-     * @return \App\V2\Modules\Tools\ProcessStarter
      */
     public function withAdditionalPathVariable(string $value): ProcessStarter
     {
@@ -160,9 +162,7 @@ class ProcessStarter
      * All other arguments are passed to the `run()` method.
      *
      *
-     * @var int|string ...$defaultArgs
-     *
-     * @param  string  $defaultArgs
+     * @param  int|string  ...$defaultArgs
      * @return static
      */
     public function withDefaultArguments(...$defaultArgs): self
@@ -263,9 +263,11 @@ class ProcessStarter
     }
 
     /**
+     * @param  mixed[]  $argv
      * @param  resource  $stdout
      * @param  resource  $stderr
      * @param  null|string  $workingDirectory
+     * @param  array<string, string>  $environment
      */
     private function runImpl(array $argv, $stdout, $stderr, $workingDirectory, ?array $environment): int
     {
@@ -294,6 +296,7 @@ class ProcessStarter
     /**
      * utility function to type-check and normalize arguments
      *
+     * @param  mixed[]  $args
      * @return string[]
      */
     private function normalizeArgs(array $args): array
@@ -317,6 +320,8 @@ class ProcessStarter
      *
      * If no modifications are required, it just returns null as a shortcut to
      * inherit the whole environment.
+     *
+     * @return null|array<string, string>
      */
     private function resolveEnvironment(): ?array
     {
