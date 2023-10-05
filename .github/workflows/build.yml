@@ -36,3 +36,6 @@ jobs:
 
       - name: Lint code
         run: vendor/bin/phpstan
+
+      - name: Run tests
+        run: vendor/bin/phpunit --no-configuration --bootstrap vendor/autoload.php --testdox tests
