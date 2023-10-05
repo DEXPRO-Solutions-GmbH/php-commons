@@ -2,11 +2,8 @@
 
 declare(strict_types=1);
 
-
-namespace DexproSolutionsGmbh\PhpCommons\OS\Process;
-
 use DexproSolutionsGmbh\PhpCommons\OS\OS;
-use Exception;
+use DexproSolutionsGmbh\PhpCommons\OS\Process\ProcessStarter;
 use PHPUnit\Framework\TestCase;
 
 class ProcessStarterTest extends TestCase
@@ -23,7 +20,7 @@ class ProcessStarterTest extends TestCase
         // value and add ".exe" to it, just to make extra sure that "php.exe"
         // is found during test execution.
         self::$pathext = getenv('PATHEXT');
-        putenv('PATHEXT=.exe;' . (self::$pathext ?: ''));
+        putenv('PATHEXT=.exe;'.(self::$pathext ?: ''));
     }
 
     public static function tearDownAfterClass(): void
@@ -32,7 +29,7 @@ class ProcessStarterTest extends TestCase
         if (self::$pathext === false) {
             putenv('PATHEXT');
         } else {
-            putenv('PATHEXT=' . self::$pathext);
+            putenv('PATHEXT='.self::$pathext);
         }
 
         parent::tearDownAfterClass();
@@ -78,7 +75,7 @@ class ProcessStarterTest extends TestCase
             ->withAdditionalPathVariable($executables[2]);
 
         $pathBeforeExecutable = getenv('PATH');
-        if (!$pathBeforeExecutable) {
+        if (! $pathBeforeExecutable) {
             $pathBeforeExecutable = '';
         }
         $process = $starter->run('-r', 'echo(getenv("PATH"));');
@@ -86,7 +83,7 @@ class ProcessStarterTest extends TestCase
 
         // build excepted result
         $separator = OS::isWindows() ? ';' : ':';
-        $expectedPathVariable = implode($separator, array_reverse($executables)) . $separator . $pathBeforeExecutable;
+        $expectedPathVariable = implode($separator, array_reverse($executables)).$separator.$pathBeforeExecutable;
 
         // assert the PATH environment variable from the child process with the expected PATH environment variable
         $this->assertSame([$expectedPathVariable], iterator_to_array($iterator));
@@ -103,7 +100,7 @@ class ProcessStarterTest extends TestCase
             ->withExpectedExitCodes($exitCode)
             ->withDefaultArguments('-r');
 
-        $process = $starter->run('exit(' . $exitCode . ');');
+        $process = $starter->run('exit('.$exitCode.');');
 
         $this->assertSame($exitCode, $process->exitCode);
     }
@@ -117,7 +114,7 @@ class ProcessStarterTest extends TestCase
             ->withDefaultArguments('-r');
 
         $this->expectException(Exception::class);
-        $starter->run('exit(' . ($exitCode + 1) . ');');
+        $starter->run('exit('.($exitCode + 1).');');
     }
 
     public function testOutputHandling1(): void
