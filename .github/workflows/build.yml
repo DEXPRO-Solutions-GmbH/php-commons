@@ -33,3 +33,6 @@ jobs:
 
       - name: Check code style
         run: vendor/bin/pint --test
+
+      - name: Lint code
+        run: vendor/bin/phpstan
