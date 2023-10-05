@@ -1,0 +1,11 @@
+{
+    "name": "dexpro-solutions-gmbh/php-commons",
+    "description": "Common packages used by DEXPRO in other projects",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "DexproSolutionsGmbh\\PhpCommons\\": "src/"
+        }
+    },
+    "require": {}
+}
