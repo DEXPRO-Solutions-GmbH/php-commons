@@ -6,9 +6,9 @@ declare(strict_types=1);
 namespace DexproSolutionsGmbh\PhpCommons\OS\Process;
 
 
+use DexproSolutionsGmbh\PhpCommons\OS\OS;
 use Exception;
 use InvalidArgumentException;
-use Squeeze\xTools;
 
 /**
  * Utility for launching CLI programs
@@ -42,7 +42,7 @@ class ProcessStarter
     private function __construct(string $name)
     {
         // determine which path variable should be used
-        if (xTools::getOperatingSystem() === xTools::OS_LINUX) {
+        if (OS::isLinux()) {
             $this->pathEnvKey = 'PATH';
         } else {
             $this->pathEnvKey = 'Path';
@@ -110,7 +110,7 @@ class ProcessStarter
     public function withAdditionalPathVariable(string $value): ProcessStarter
     {
         $other = clone $this;
-        $separator = (xTools::getOperatingSystem() === xTools::OS_WINDOWS) ? ';' : ':';
+        $separator = OS::isWindows() ? ';' : ':';
 
         if (isset($other->environment[$this->pathEnvKey])) {
             $other->environment[$this->pathEnvKey] = $value . $separator . $this->environment[$this->pathEnvKey];
@@ -349,7 +349,7 @@ class ProcessStarter
             throw new Exception('no executable path configured and no PATH environment var set');
         }
 
-        if (xTools::getOperatingSystem() === 'windows') {
+        if (OS::isWindows()) {
             $separator = ';';
             $pathext = getenv('PATHEXT');
             if ($pathext === false) {
