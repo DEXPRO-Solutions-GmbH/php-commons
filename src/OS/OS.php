@@ -35,12 +35,12 @@ class OS
         return $system;
     }
 
-    public function isWindows(): bool
+    public static function isWindows(): bool
     {
         return self::getOperatingSystem() === self::WINDOWS;
     }
 
-    public function isLinux(): bool
+    public static function isLinux(): bool
     {
         return self::getOperatingSystem() === self::LINUX;
     }
